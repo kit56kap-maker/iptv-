@@ -815,30 +815,6 @@ select{
   min-width:120px;
 }
 
-/* ============ BUFFER PRESETS ============ */
-.buffer-presets{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(72px,1fr));
-  gap:8px;
-}
-.buffer-preset{
-  background:var(--panel-2);border:1px solid var(--border);
-  color:var(--text);padding:10px 6px;border-radius:8px;
-  font-family:inherit;font-size:13px;font-weight:600;
-  cursor:pointer;transition:background var(--dur-fast),transform var(--dur-fast),border-color var(--dur-fast);
-  user-select:none;min-height:44px;
-}
-.buffer-preset:active{transform:scale(.95)}
-.buffer-preset.active{background:var(--accent);color:#fff;border-color:var(--accent)}
-.buffer-info-box{
-  background:var(--panel-2);border:1px solid var(--border);
-  border-radius:10px;padding:12px;font-size:12px;color:var(--muted);
-  line-height:1.6;margin-top:10px;
-}
-.buffer-info-box b{color:var(--text)}
-.buffer-info-box .warn{color:#ffa726}
-.buffer-info-box .accent{color:var(--accent)}
-
 .menu-toggle{display:inline-flex}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 
@@ -860,7 +836,6 @@ select{
   .back-btn:hover{filter:brightness(1.15)}
   .epg-edit-option:hover{border-color:var(--accent)}
   .epg-panel-close:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
-  .buffer-preset:hover{border-color:var(--accent)}
 }
 @media (min-width: 1600px){
   :root{--sidebar-w:420px}
@@ -924,8 +899,6 @@ select{
   .channel{transition-duration:.08s}
   .group-item{transition-duration:.08s}
   .epg-source-btn{width:32px;height:32px;font-size:14px}
-  .buffer-presets{grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:6px}
-  .buffer-preset{font-size:12px;padding:8px 4px}
 
   .epg-panel{
     position:fixed;
@@ -979,6 +952,8 @@ select{
   .epg-item.current{margin:0 -14px;padding:12px 14px}
   .epg-time{min-width:88px;font-size:12px}
   .epg-title{font-size:14px}
+
+  /* 🎯 Затемнение убрано — фон не перекрывается при открытии EPG панели */
 
   .player-clock{
     top:10px;
@@ -1115,7 +1090,6 @@ body.tv-mode #playlist-modal .modal-box{max-width:900px}
 body.tv-mode #edit-urls-modal .modal-box{max-width:800px}
 body.tv-mode #epg-edit-modal .modal-box{max-width:760px}
 body.tv-mode #info-modal .modal-box{max-width:800px}
-body.tv-mode #buffer-modal .modal-box{max-width:800px}
 body.tv-mode .epg-edit-option{padding:18px;border-radius:12px}
 body.tv-mode .epg-edit-option label{font-size:15px}
 body.tv-mode .epg-edit-option input[type=radio]{width:20px;height:20px}
@@ -1144,8 +1118,6 @@ body.tv-mode .clock-row .clock-toggle{width:56px;height:30px}
 body.tv-mode .clock-row .clock-toggle .slider::before{height:24px;width:24px}
 body.tv-mode .clock-row .clock-toggle input:checked + .slider::before{transform:translateX(26px)}
 body.tv-mode .clock-row select{min-height:48px;font-size:15px;min-width:160px;padding:10px 14px}
-body.tv-mode .buffer-preset{font-size:16px;padding:14px 10px;min-height:52px}
-body.tv-mode .buffer-info-box{font-size:14px;padding:16px}
 body.tv-mode .channel,
 body.tv-mode .group-item,
 body.tv-mode .tile,
@@ -1248,50 +1220,6 @@ body.tv-mode .pl-item{transition:transform .12s ease, background .12s ease, bord
     <div class="info-content" id="info-content"></div>
     <div class="modal-actions">
       <button class="btn focusable" data-action="close-modal" data-target="info-modal" tabindex="0">Закрыть</button>
-    </div>
-  </div>
-</div>
-
-<div class="modal" id="buffer-modal">
-  <div class="modal-box" style="max-width:640px">
-    <h2>📦 Буферизация потока</h2>
-    <p style="color:var(--muted);font-size:13px;margin-bottom:16px;line-height:1.5">
-      Сколько минут видео загружается вперёд. При кратковременных пропаданиях потока воспроизведение продолжится из буфера, а когда поток восстановится — буфер снова заполнится.
-    </p>
-
-    <div class="field">
-      <label style="display:flex;justify-content:space-between;font-size:14px;color:var(--text);margin-bottom:10px">
-        <span>Размер буфера</span>
-        <span><b id="buf-val" style="color:var(--accent);font-size:16px">4</b> мин</span>
-      </label>
-      <input type="range" id="c-buffer-minutes" min="0" max="50" value="4" step="1" style="width:100%">
-      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px">
-        <span>0 (мин.)</span><span>10</span><span>25</span><span>50 (макс.)</span>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Быстрый выбор</label>
-      <div class="buffer-presets" id="buffer-presets">
-        <button class="buffer-preset" data-action="set-buffer" data-id="0" tabindex="0">0 мин</button>
-        <button class="buffer-preset" data-action="set-buffer" data-id="4" tabindex="0">4 мин</button>
-        <button class="buffer-preset" data-action="set-buffer" data-id="10" tabindex="0">10 мин</button>
-        <button class="buffer-preset" data-action="set-buffer" data-id="20" tabindex="0">20 мин</button>
-        <button class="buffer-preset" data-action="set-buffer" data-id="30" tabindex="0">30 мин</button>
-        <button class="buffer-preset" data-action="set-buffer" data-id="50" tabindex="0">50 мин</button>
-      </div>
-    </div>
-
-    <div class="buffer-info-box">
-      💡 <b>Рекомендация:</b> <span class="accent">4–10 мин</span> — оптимально для большинства случаев.
-      Большие значения (30–50 мин) требуют много оперативной памяти: примерно
-      <b id="buf-mem-est">240 МБ</b> при HD-потоке.<br>
-      <span class="warn">⚠️ Применяется при следующем запуске канала.</span>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn focusable" data-action="close-modal" data-target="buffer-modal" tabindex="0">Отмена</button>
-      <button class="btn primary focusable" data-action="save-buffer" tabindex="0">💾 Сохранить</button>
     </div>
   </div>
 </div>
@@ -1532,7 +1460,7 @@ body.tv-mode .pl-item{transition:transform .12s ease, background .12s ease, bord
         <input type="range" id="c-player-pad-x" min="0" max="40" value="0" step="1" style="width:100%">
       </div>
       <div class="field-hint">
-        Уменьшает область видео, добавляя чёрные полосы по краям. 0% — видео занимает всю область.
+        Уменьшает область видео, добавляя чёрные полосы по краям. 0% — видео занимает всю область. Полезно на ТВ, где интерфейс может перекрывать края кадра.
       </div>
     </div>
 
@@ -1549,7 +1477,16 @@ body.tv-mode .pl-item{transition:transform .12s ease, background .12s ease, bord
         <option value="144">144p</option>
       </select>
       <div class="field-hint">
-        Применяется к HLS (m3u8) потокам. Плеер выберет ближайшее доступное качество, не превышающее указанное.
+        Применяется к HLS (m3u8) потокам. Плеер выберет ближайшее доступное качество, не превышающее указанное. Для прямых потоков (MP4, TS) — не регулируется.
+      </div>
+    </div>
+
+    <!-- 📦 БУФЕРИЗАЦИЯ -->
+    <div class="field" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+      <label>📦 Буферизация: <span id="buf-val">4</span> мин</label>
+      <input type="range" id="c-buffer-minutes" min="0" max="15" value="4" step="1" style="width:100%">
+      <div class="field-hint">
+        Сколько минут видео загружается вперёд. При кратковременных пропаданиях потока воспроизведение продолжится из буфера, а когда поток восстановится — буфер снова заполнится. <b>4 минуты</b> — рекомендуемое значение. Большие значения требуют больше памяти (~100–200 МБ). При 0 — минимальная буферизация (как у обычных плееров).
       </div>
     </div>
 
@@ -1751,7 +1688,7 @@ function openModal(id){
   setTimeout(() => {
     const box = document.querySelector('#'+id+' .modal-box');
     if(!box) return;
-    const first = box.querySelector('.tile, .test-filter-tab, .buffer-preset, input, textarea, button, .tab, .theme-card, .pl-item, .epg-edit-option, .clock-toggle');
+    const first = box.querySelector('.tile, .test-filter-tab, input, textarea, button, .tab, .theme-card, .pl-item, .epg-edit-option, .clock-toggle');
     if(first) first.focus();
   }, 100);
 }
@@ -1767,7 +1704,7 @@ function closeModal(id){
 function isModalOpen(){ return document.querySelector('.modal.open'); }
 function openPlaylistModal(){ renderPlaylistsList(); openModal('playlist-modal'); }
 function openEpgModal(){ renderEpgSourcesList(); renderEpgMatchSummary(); openModal('epg-modal'); }
-function openThemeModal(){ loadClockSettings(); loadPlayerPadding(); loadQualitySetting(); openModal('theme-modal'); }
+function openThemeModal(){ loadClockSettings(); loadPlayerPadding(); loadQualitySetting(); loadBufferSetting(); openModal('theme-modal'); }
 function switchTabByName(name){
   document.querySelectorAll('#playlist-modal .tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
   document.querySelectorAll('#playlist-modal .tab-content').forEach(c => c.classList.toggle('active', c.id === 'tab-'+name));
@@ -1835,8 +1772,6 @@ function loadBufferSetting(){
   if(el) el.textContent = state.bufferMinutes;
   const slider = document.getElementById('c-buffer-minutes');
   if(slider) slider.value = state.bufferMinutes;
-  updateBufferPresets();
-  updateBufferMemEstimate();
 }
 function saveBufferSetting(){
   try{ localStorage.setItem('iptv_buffer_minutes', String(state.bufferMinutes)); }catch(e){}
@@ -1848,43 +1783,11 @@ function bindBufferControl(){
     state.bufferMinutes = parseInt(e.target.value) || 0;
     const el = document.getElementById('buf-val');
     if(el) el.textContent = state.bufferMinutes;
-    updateBufferPresets();
-    updateBufferMemEstimate();
   });
-}
-function updateBufferPresets(){
-  document.querySelectorAll('#buffer-presets .buffer-preset').forEach(btn => {
-    const v = parseInt(btn.dataset.id);
-    btn.classList.toggle('active', v === state.bufferMinutes);
+  slider.addEventListener('change', () => {
+    saveBufferSetting();
+    showToast('📦 Буфер: ' + state.bufferMinutes + ' мин · применится при след. запуске канала');
   });
-}
-function updateBufferMemEstimate(){
-  const el = document.getElementById('buf-mem-est');
-  if(!el) return;
-  const mb = Math.min(1500, Math.max(0, state.bufferMinutes * 60 * 1024 * 1024 / 60));
-  const memMb = state.bufferMinutes * 1024; // ~1 МБ/сек → 60 МБ/мин
-  const memMbFinal = Math.min(1500, memMb);
-  const txt = memMbFinal >= 1000 ? (memMbFinal/1000).toFixed(2) + ' ГБ' : Math.round(memMbFinal) + ' МБ';
-  el.textContent = txt;
-}
-function setBufferPreset(min){
-  state.bufferMinutes = min;
-  const el = document.getElementById('buf-val');
-  if(el) el.textContent = min;
-  const slider = document.getElementById('c-buffer-minutes');
-  if(slider) slider.value = min;
-  updateBufferPresets();
-  updateBufferMemEstimate();
-}
-function openBufferModal(){
-  loadBufferSetting();
-  openModal('buffer-modal');
-}
-function saveBufferFromModal(){
-  saveBufferSetting();
-  closeModal('buffer-modal');
-  showToast('📦 Буфер: ' + state.bufferMinutes + ' мин · применится при след. запуске канала');
-  refreshHomeMenuIfOpen();
 }
 function getBufferSeconds(){ return Math.max(0, state.bufferMinutes || 0) * 60; }
 function getHlsBufferConfig(){
@@ -1898,10 +1801,10 @@ function getHlsBufferConfig(){
       backBufferLength: 90
     };
   }
-  // 50 минут = 3000 секунд. Оценка: ~1 МБ/сек для HD.
-  // Ограничиваем размер буфера 2 ГБ.
-  const bytesPerSec = 1024 * 1024;
-  const bufBytes = Math.min(2000 * 1000 * 1000, Math.max(60 * 1000 * 1000, bufSec * bytesPerSec));
+  // Размер в байтах: ~ 6 МБит/с на секунду, ~0.75 МБ/сек → берём с запасом
+  // 4 мин = 240 сек × ~1 МБ/сек = 240 МБ. Округлим до 300 МБ для надёжности.
+  const bytesPerSec = 1024 * 1024; // 1 MB/s (примерно для HD)
+  const bufBytes = Math.min(500 * 1000 * 1000, Math.max(60 * 1000 * 1000, bufSec * bytesPerSec));
   return {
     maxBufferLength: bufSec,
     maxMaxBufferLength: bufSec,
@@ -1910,6 +1813,7 @@ function getHlsBufferConfig(){
   };
 }
 function applyBufferToHlsConfig(){
+  // Возвращает объект с HLS-опциями (используется при создании Hls)
   return getHlsBufferConfig();
 }
 function applyBufferToDash(player){
@@ -1917,6 +1821,7 @@ function applyBufferToDash(player){
   const bufSec = getBufferSeconds();
   try{
     if(bufSec === 0){
+      // Минимальный буфер
       player.updateSettings({
         streaming: {
           buffer: {
@@ -1940,7 +1845,7 @@ function applyBufferToDash(player){
           bufferTimeAtTopQuality: bufSec,
           bufferTimeAtTopQualityLongForm: bufSec,
           longFormContentDurationThreshold: 600,
-          bufferToKeep: Math.min(90, bufSec),
+          bufferToKeep: 90,
           bufferPruningInterval: 10
         }
       }
@@ -2043,6 +1948,7 @@ function updateBufferBadge(){
   const el = document.getElementById('buffer-badge');
   const video = document.getElementById('video');
   if(!el || !video) return;
+  // Показываем бейдж только для активных HLS/DASH потоков
   if(!state.hls && !state.dash){ el.style.display = 'none'; return; }
   try{
     let bufferedAhead = 0;
@@ -2071,10 +1977,7 @@ function formatBufTime(sec){
   if(sec < 60) return Math.round(sec) + 'с';
   const m = Math.floor(sec / 60);
   const s = Math.round(sec % 60);
-  if(m < 60) return m + 'м' + (s > 0 ? ' ' + s + 'с' : '');
-  const h = Math.floor(m / 60);
-  const mm = m % 60;
-  return h + 'ч ' + mm + 'м';
+  return m + 'м' + (s > 0 ? ' ' + s + 'с' : '');
 }
 
 /* ============ 🕐 ЧАСЫ В ПЛЕЕРЕ ============ */
@@ -2244,7 +2147,7 @@ function openInfo(){
       </div>
       <div class="info-row">
         <span class="info-label">Буфер</span>
-        <span class="info-value">${state.bufferMinutes} мин${state.hls || state.dash ? ' · сейчас ' + document.getElementById('buffer-badge').textContent.replace('⚡ ','') : ''}</span>
+        <span class="info-value">${state.bufferMinutes} мин${state.hls || state.dash ? ' · ' + document.getElementById('buffer-badge').textContent.replace('⚡ ','') : ''}</span>
       </div>
       <div class="info-row">
         <span class="info-label">tvg-id</span>
@@ -2374,16 +2277,10 @@ function renderHomeMenu(){
       </div>`;
   }
   html += `
-    <div class="tile focusable" tabindex="0" data-action="open-buffer" title="Буферизация потока">
-      <div class="tile-icon">📦</div>
-      <div class="tile-title">Буфер</div>
-      <div class="tile-subtitle">${state.bufferMinutes} мин вперёд</div>
-    </div>`;
-  html += `
     <div class="tile focusable" tabindex="0" data-action="open-theme" title="Дизайн">
       <div class="tile-icon">🎨</div>
       <div class="tile-title">Дизайн</div>
-      <div class="tile-subtitle">Темы, часы, качество, поля</div>
+      <div class="tile-subtitle">Темы, часы, буфер, качество</div>
     </div>`;
   html += `
     <div class="tile focusable" tabindex="0" data-action="go-home" title="На главную">
@@ -3934,21 +3831,22 @@ function playChannel(id){
   const isHls = /\.m3u8($|\?)/i.test(url) || url.includes('m3u8');
   const isDash = /\.mpd($|\?)/i.test(url) || url.includes('mpd');
   if(isHls && window.Hls && Hls.isSupported()){
+    // Применяем настройки буферизации к HLS
     const bufCfg = applyBufferToHlsConfig();
     const hls = new Hls({
       enableWorker: true,
-      lowLatencyMode: false,
+      lowLatencyMode: false,           // отключаем для максимума буфера
       capLevelToPlayerSize: true,
       maxBufferLength: bufCfg.maxBufferLength,
       maxMaxBufferLength: bufCfg.maxMaxBufferLength,
       maxBufferSize: bufCfg.maxBufferSize,
       backBufferLength: bufCfg.backBufferLength,
-      liveSyncDurationCount: 3,
-      liveMaxLatencyDurationCount: 30,
-      fragLoadingMaxRetry: 30,
+      liveSyncDurationCount: 3,        // сколько сегментов от live-edge
+      liveMaxLatencyDurationCount: 10, // макс. отставание от live
+      fragLoadingMaxRetry: 20,         // больше попыток при пропадании сети
       fragLoadingRetryDelay: 1000,
-      manifestLoadingMaxRetry: 8,
-      levelLoadingMaxRetry: 8
+      manifestLoadingMaxRetry: 6,
+      levelLoadingMaxRetry: 6
     });
     hls.loadSource(url); hls.attachMedia(video);
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
@@ -4225,9 +4123,6 @@ document.addEventListener('click', e => {
     case 'open-theme': openThemeModal(); break;
     case 'open-test': openTestModal(); break;
     case 'open-info': openInfo(); break;
-    case 'open-buffer': openBufferModal(); break;
-    case 'set-buffer': setBufferPreset(parseInt(id)); break;
-    case 'save-buffer': saveBufferFromModal(); break;
     case 'close-modal': closeModal(targetModal); break;
     case 'close-test': closeTestModal(); break;
     case 'go-home': closeModal('home-modal'); setTimeout(() => goHome(), 200); break;
@@ -4442,7 +4337,6 @@ document.addEventListener('keydown', e => {
   if(e.key === 'h' || e.key === 'H'){ openHomeMenu(); }
   if(e.key === 't' || e.key === 'T'){ openTestModal(); }
   if(e.key === 'i' || e.key === 'I'){ openInfo(); }
-  if(e.key === 'b' || e.key === 'B'){ openBufferModal(); }
   if(e.key === '/' && !inInput){ e.preventDefault(); document.getElementById('search').focus(); }
 });
 window.addEventListener('keyup', e => {
@@ -4499,7 +4393,7 @@ function init(){
   setInterval(() => { updateNowEpg(); updateProgressBars(); }, 20000);
   startAutoRefreshChecker();
   document.addEventListener('mousedown', e => {
-    const f = e.target.closest('.focusable, .btn, .channel, .group-item, .pl-item, .tile, .test-filter-tab, .test-result-row, .epg-panel-close, .clock-toggle, .buffer-preset');
+    const f = e.target.closest('.focusable, .btn, .channel, .group-item, .pl-item, .tile, .test-filter-tab, .test-result-row, .epg-panel-close, .clock-toggle');
     if(f) setTimeout(() => f.focus(), 0);
   });
   if(state.isTV){
@@ -4524,6 +4418,7 @@ function init(){
       } else { el.style.borderColor = ''; el.title = ''; }
     });
   });
+  // Следим за уровнем буфера при воспроизведении
   video.addEventListener('timeupdate', () => {
     if(state.hls || state.dash) updateBufferBadge();
   });
